@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		var paymentsTable = new google.visualization.DataTable();
+		var paymentsChart;
+		
+		data.addColumn('number', 'Year');
+		data.addColumn('number', 'Month');
+		data.addColumn('number', 'Contributions'
+		);
+		data.addRow(2015, 6, 299.46);
+		data.addRow(2015, 7, 154.08);
+		data.addRow(2015, 8, 154.08);
+		data.addRow(2015, 9, 154.08);
+		data.addRow(2015, 10, 154.08);
+		data.addRow(2015, 11, 154.08);
+		data.addRow(2015, 12, 154.08);
+		data.addRow(2016, 1, 155.62);
+		
+		paymentsChart = new google.visualization.LineChart(document.getElementById('payments'));
+		
+		paymentsChart.draw(paymentsTable, {title:'Payments', curveType:'function', legend: {position:'bottom'});
+	</script>
+</head>
+<body>
+Payments:
+	<div id="payments">
+	</div>
+Lump sum:
+	<div id="lumpSum">
+	</div>
+</body>
+</html>
