@@ -2,34 +2,36 @@
 <html>
 <head>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	<script type="text/javascript">
-		var paymentsTable = new google.visualization.DataTable();
-		var paymentsChart;
-		
-		data.addColumn('number', 'Year');
-		data.addColumn('number', 'Month');
-		data.addColumn('number', 'Contributions'
-		);
-		data.addRow(2015, 6, 299.46);
-		data.addRow(2015, 7, 154.08);
-		data.addRow(2015, 8, 154.08);
-		data.addRow(2015, 9, 154.08);
-		data.addRow(2015, 10, 154.08);
-		data.addRow(2015, 11, 154.08);
-		data.addRow(2015, 12, 154.08);
-		data.addRow(2016, 1, 155.62);
-		
-		paymentsChart = new google.visualization.LineChart(document.getElementById('payments'));
-		
-		paymentsChart.draw(paymentsTable, {title:'Payments', curveType:'function', legend: {position:'bottom'});
-	</script>
-</head>
+	<script type="text/javascript" src="nhspension.js">
 <body>
+<div id="userInputs">
+<form>
+	Start Year:<br>
+	<input type="number" id="startYear" value="2015">
+	<br>
+	Start Month:<br>
+	<input type="number" id="startMonth" value="8">
+	<br>
+	End Year:<br>
+	<input type="number" id="endYear" value="2018">
+	<br>
+	End Month<br>
+	<input type="number" id="endMonth" value="9">
+	<br>
+	Band:<br>
+	<input type="number" id="band" value="6">
+    <br>
+    Pay Point:<br>
+    <input type="number" id="point" value="21">
+	<br>
+</form>
+<button onclick="drawPaymentsChart()">Click me</button>
+</div> 
 Payments:
-	<div id="payments">
+	<div id="payments" style="width: 400px; height: 400px">
 	</div>
 Lump sum:
-	<div id="lumpSum">
+	<div id="lumpSum" style="width:400px; height:400px">
 	</div>
 </body>
 </html>
