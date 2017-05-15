@@ -13,6 +13,8 @@ function drawPaymentsChart() {
 	var endMonth = document.getElementById("endMonth").value;
 	var payBand = document.getElementById("band").value;
 	var payPoint = document.getElementById("point").value;
+	
+	document.getElementById("ezDebug").innerHTML = payBand;
 
 	var startDate = new Date(startYear, startMonth);
 	var endDate = new Date(endYear, endMonth);
@@ -33,7 +35,7 @@ function drawPaymentsChart() {
 
 	console.log(payBand);
 	console.log(payPoint);
-	payTbl = calculatePayments(startDate, endDate, payPoint, 6);
+	payTbl = calculatePayments(startDate, endDate, payPoint, payBand);
 	penTbl = calculatePension(payTbl);
 
 	//console.log("Draw charts");
@@ -386,7 +388,7 @@ function incrementPoint(year, month, band, point) {
 		}
 		break;
 	case 11: /* 8d */
-		if (point < 83258) {
+		if (point < 50) {
 			point++;
 		}
 		break;
@@ -399,3 +401,157 @@ function incrementPoint(year, month, band, point) {
 	//console.log("new point = " + point);
 	return point;
 }
+
+function updatePoint() {
+	console.log("here");
+	var band = document.getElementById("band").value;
+	
+	console.log(typeof band);
+	console.log(band);
+	
+	switch(band) {
+	case '1':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"1\">1</option> \
+			<option value=\"2\">2</option> \
+			<option value=\"3\">3</option> \
+		</select>";
+		break;
+	case '2':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"2\">2</option> \
+			<option value=\"3\">3</option> \
+			<option value=\"4\">4</option> \
+			<option value=\"5\">5</option> \
+			<option value=\"6\">6</option> \
+			<option value=\"7\">7</option> \
+			<option value=\"8\">8</option> \
+		</select>";
+		break;
+	case '3':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"6\">6</option> \
+			<option value=\"7\">7</option> \
+			<option value=\"8\">8</option> \
+			<option value=\"9\">9</option> \
+			<option value=\"10\">10</option> \
+			<option value=\"11\">11</option> \
+			<option value=\"12\">12</option> \
+		</select>";
+		break;
+	case '4':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"11\">11</option> \
+			<option value=\"12\">12</option> \
+			<option value=\"13\">13</option> \
+			<option value=\"14\">14</option> \
+			<option value=\"15\">15</option> \
+			<option value=\"16\">16</option> \
+			<option value=\"17\">17</option> \
+		</select>";
+		break;
+	case '5':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"16\">16</option> \
+			<option value=\"17\">17</option> \
+			<option value=\"18\">18</option> \
+			<option value=\"19\">19</option> \
+			<option value=\"20\">20</option> \
+			<option value=\"21\">21</option> \
+			<option value=\"22\">22</option> \
+			<option value=\"23\">23</option> \
+		</select>";
+		break;
+	case '6':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"21\">21</option> \
+			<option value=\"22\">22</option> \
+			<option value=\"23\">23</option> \
+			<option value=\"24\">24</option> \
+			<option value=\"25\">25</option> \
+			<option value=\"26\">26</option> \
+			<option value=\"27\">27</option> \
+			<option value=\"28\">28</option> \
+			<option value=\"29\">29</option> \
+		</select>";
+		break;
+	case '7':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"26\">26</option> \
+			<option value=\"27\">27</option> \
+			<option value=\"28\">28</option> \
+			<option value=\"29\">39</option> \
+			<option value=\"30\">30</option> \
+			<option value=\"31\">31</option> \
+			<option value=\"32\">32</option> \
+			<option value=\"33\">33</option> \
+			<option value=\"34\">34</option> \
+		</select>";
+		break;
+	case '8a':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"33\">33</option> \
+			<option value=\"34\">34</option> \
+			<option value=\"35\">35</option> \
+			<option value=\"36\">36</option> \
+			<option value=\"37\">37</option> \
+			<option value=\"38\">38</option> \
+		</select>";
+		break;
+	case '8b':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"37\">37</option> \
+			<option value=\"38\">38</option> \
+			<option value=\"39\">39</option> \
+			<option value=\"40\">40</option> \
+			<option value=\"41\">41</option> \
+			<option value=\"42\">42</option> \
+		</select>";
+		break;
+	case '8c':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"41\">41</option> \
+			<option value=\"42\">42</option> \
+			<option value=\"43\">43</option> \
+			<option value=\"44\">44</option> \
+			<option value=\"45\">45</option> \
+			<option value=\"46\">46</option> \
+		</select>";
+		break;
+	case '8d':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"45\">45</option> \
+			<option value=\"46\">46</option> \
+			<option value=\"47\">47</option> \
+			<option value=\"48\">48</option> \
+			<option value=\"49\">49</option> \
+			<option value=\"50\">50</option> \
+		</select>";
+		break;
+	case '9':
+		document.getElementById("pointWrapper").innerHTML = "\
+		<select id=\"point\"> \
+			<option value=\"49\">49</option> \
+			<option value=\"50\">50</option> \
+			<option value=\"51\">51</option> \
+			<option value=\"52\">52</option> \
+			<option value=\"53\">53</option> \
+			<option value=\"54\">54</option> \
+		</select>";
+		break;
+	default:
+		document.getElementById("pointWrapper").innerHTML = "null";
+		break;
+	}
+} 

@@ -5,6 +5,8 @@
 	<script type="text/javascript" src="nhspension.js"></script>
 </head>
 <body>
+<div id="ezDebug">
+</div>
 <div id="userInputs">
 <form>
 	Start Year:<br>
@@ -20,10 +22,26 @@
 	<input type="number" id="endMonth" value="9">
 	<br>
 	Band:<br>
-	<input type="number" id="band" value="6">
+	<select id="band" onchange="updatePoint()">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+		<option value="6">6</option>
+		<option value="7">7</option>
+		<option value="8a">8a</option>
+		<option value="8b">8b</option>
+		<option value="8c">8c</option>
+		<option value="8d">8d</option>
+		<option value="9">9</option>
+	</select>
+<!	<input type="number" id="band" value="6"!>
     <br>
     Pay Point:<br>
+	<div id="pointWrapper">
     <input type="number" id="point" value="21">
+	</div>
 	<br>
 </form>
 <button onclick="drawPaymentsChart()">Click me</button>
