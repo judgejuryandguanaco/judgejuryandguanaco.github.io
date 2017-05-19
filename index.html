@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+<meta charset="UTF-8"> 
 <head>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript" src="nhspension.js"></script>
@@ -36,19 +37,19 @@
 		<option value="8d">8d</option>
 		<option value="9">9</option>
 	</select>
-<!	<input type="number" id="band" value="6"!>
     <br>
     Pay Point:<br>
+	<! HTML assigned to pointWrapper by updatePoint() in nhspension.js !>
 	<div id="pointWrapper">
 	</div>
 	<br>
 </form>
 <button onclick="drawPaymentsChart()">Click me</button>
-</div> 
-Payments:
+</div>
+	<div id="salary" style="width:400px; height:400px">
+	</div>
 	<div id="payments" style="width: 400px; height: 400px">
 	</div>
-Lump sum:
 	<div id="lumpSum" style="width:400px; height:400px">
 	</div>
 </body>

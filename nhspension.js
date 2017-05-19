@@ -1,102 +1,105 @@
-google.charts.load('current', {'packages':['corechart']});
+"use strict";
+google.charts.load("current", {"packages":["corechart"]});
 //google.charts.setOnLoadCallback(drawPaymentsChart)
 
 function drawPaymentsChart() {
 	var payTbl = new google.visualization.DataTable();
-	var payCht = new google.visualization.LineChart(document.getElementById('payments'));
+	var payCht = new google.visualization.LineChart(document.getElementById("payments"));
 	var penTbl = new google.visualization.DataTable();
-	var penCht = new google.visualization.LineChart(document.getElementById('lumpSum'));
+	var penCht = new google.visualization.LineChart(document.getElementById("lumpSum"));
+	var salTbl = new google.visualization.DataTable();
+	var salCht = new google.visualization.LineChart(document.getElementById("salary"));
 
-	var startYear = document.getElementById("startYear").value;
-	var startMonth = document.getElementById("startMonth").value;
-	var endYear = document.getElementById("endYear").value;
-	var endMonth = document.getElementById("endMonth").value;
-	var payBand = document.getElementById("band").value;
-	var payPoint = document.getElementById("point").value;
-	
-	document.getElementById("ezDebug").innerHTML = payBand;
+	var band = document.getElementById("band").value;
+	var point = document.getElementById("point").value;
 
-	var startDate = new Date(startYear, startMonth);
-	var endDate = new Date(endYear, endMonth);
-
-	console.log(isNaN(payPoint));
-	console.log(payBand);
-	console.log(startYear);
+	// Date format range is 0 - 11, therefore have to subtract 1 from form range, which is 1 - 12
+	var startDate = new Date(document.getElementById("startYear").value, document.getElementById("startMonth").value - 1);
+	var endDate = new Date(document.getElementById("endYear").value, document.getElementById("endMonth").value - 1);
 	
 	var payChtOps = {
 		title: "Personal Contributions",
-		legend: { position: 'bottom' }
+		legend: { position: "bottom" }
 	};
-
 	var penChtOps = {
 		title: "Size of Pension Over Time",
 		legend: { position: "bottom" }
 	};
+	var salChtOps = {
+		title: "Salary Contributions",
+		legend: { position: "bottom" }
+	};
 
-	console.log(payBand);
-	console.log(payPoint);
-	payTbl = calculatePayments(startDate, endDate, payPoint, payBand);
+	payTbl = calculatePayments(startDate, endDate, point, band);
 	penTbl = calculatePension(payTbl);
-
-	//console.log("Draw charts");
-
+	salTbl = calcSal(startDate, endDate, point, band);
+	
 	payCht.draw(payTbl, payChtOps);  
 	penCht.draw(penTbl, penChtOps);
+	salCht.draw(salTbl, salChtOps);
 }
 
-function calculatePayments(startDate, endDate, startPoint, startBand) {
-	var paymentsTable = new google.visualization.DataTable();
+function calcSal(startDate, endDate, strtPnt, band) {
+	var salTbl = new google.visualization.DataTable();
+	var date = new Date(startDate.getTime());
+	var point = strtPnt;
+	var sal = 0;
+	var finYrs = 0;
+	
+	salTbl.addColumn("date", "Month");
+	salTbl.addColumn("number", "Salary");
+	
+	do {
+		finYrs = calcFinancialYears2(new Date(2014, 0), date);
+		
+		sal = getSalary(date, point);
+		sal *= Math.pow(1.01, finYrs);
+		sal /= 12;
+		
+		salTbl.addRow([new Date(date.getTime()), sal]);
+		
+		if ((date.getMonth() === startDate.getMonth()) && (date.getFullYear() !== startDate.getFullYear())) {
+			point = incrementPoint(date.getFullYear(), date.getMonth(), band, point);
+		}
+		date.setMonth(date.getMonth() + 1);
+	} while (date.getTime() <= endDate.getTime());
+	return salTbl;
+}
+
+function calculatePayments(startDate, endDate, startPoint, band) {
+	var payTbl = new google.visualization.DataTable();
 	var payment = 0;
 	var salary = 0;
 	var rate = 0;
-	var year = startDate.getFullYear();
-	var month = startDate.getMonth();
-	var i = 0;
-	var date = new Date(0);
-	var payPoint = startPoint;
-	var payBand = startBand;
-	var startMonth = +startDate.getMonth();
+	var finYrs = 0;
+	// Date format range is 0 - 11, therefore have to subtract 1 from form range, which is 1 - 12
+	var date = new Date(startDate.getTime());
+	var point = startPoint;
 
-	console.log("year: " + year);
-	console.log("month: " + month);
-	console.log("point: " + payPoint);
-	console.log("band: " + startBand)
-
-	paymentsTable.addColumn("date", "Time");
-	paymentsTable.addColumn("number", "Contributions");
+	payTbl.addColumn("date", "Month");
+	payTbl.addColumn("number", "Contributions");
 
 	do {
-		salary = getSalary(year, month, payPoint);
-		console.log("salary: " + salary);
-		rate = getRate(year, month, salary);
-		console.log("pay point: " + payPoint);
-		payment = salary * rate / 12;
+		finYrs = calcFinancialYears2(new Date(2014, 0), date);
+		salary = getSalary(date, point);
+		payment = salary * Math.pow(1.01, finYrs);
+		rate = getRate(date.getFullYear(), date.getMonth(), salary);
+		payment = payment * rate;
+		payment /= 12;
 		payment = Math.round(payment * 100) / 100;
-		date = new Date(year, month);
-		paymentsTable.addRow([date, payment]);
-		//console.log("Date = " + paymentsTable.getValue(i,0) +
-		///           " Payment = " + paymentsTable.getValue(i++,1));
-		month++;
-		if (month === 13) {
-			month = 1;
-			year++;
+		payTbl.addRow([new Date(date.getTime()), payment]);
+		if (date.getMonth() === startDate.getMonth() && date.getTime() !== startDate.getTime) {
+			point = incrementPoint(date.getFullYear(), date.getMonth(), band, point);
 		}
-		if (month === startMonth - 1) {
-			payPoint = incrementPoint(year, month, payBand, payPoint);
-		}
-	} while(!((year >= endDate.getFullYear()) && (month > endDate.getMonth())));
+		date.setMonth(date.getMonth() + 1);
+	} while(date.getTime() <= endDate.getTime());
 
-	console.log("return paymentsTable");
-	return paymentsTable;
+	return payTbl;
 }
 
-function getSalary(year, month, payPoint) {
+function getSalary(date, payPoint) {
 	var salary = 0;
-	var financialYears = calcFinancialYears(2015, year, month);
-
-	console.log(isNaN(payPoint));
-	console.log(payPoint * 10);
-
+	var financialYears = calcFinancialYears2(new Date(2015, 0, 0), date);
 	switch(+payPoint) {
 	case 1:
 		salary = 14294;
@@ -165,7 +168,7 @@ function getSalary(year, month, payPoint) {
 		salary = 26822;
 		break;
 	case 23:
-		salary = 27901
+		salary = 27901;
 		break;
 	case 24:
 		salary = 28755;
@@ -261,23 +264,16 @@ function getSalary(year, month, payPoint) {
 		salary = 98453;
 		break;
 	default:
-		console.log("out ere");
 		salary = 0;
 		break;
 	}
-	console.log("Paypoint = " + payPoint + " Old salary = " + salary + " Financial years = " + financialYears);
 
-	salary *= Math.pow(1.01, financialYears);
-
-	console.log("New salary = " + salary);
 	return salary;
 }
 
 function getRate(year, month, salary) {
-  var rate = 0;
-  var financialYears = calcFinancialYears(2015, year, month);
-  //console.log("getRate()");
-  //console.log(financialYears);
+	var rate = 0;
+
 	if (salary <= 15431.99) {
 		rate = 0.05;
 	} else if (salary <= 21477.99) {
@@ -293,23 +289,23 @@ function getRate(year, month, salary) {
 	} else if (salary > 111376.99) {
 		rate = 0.145;
 	}
-  
-  return rate;
+
+	return rate;
 }
 
-function calcFinancialYears(start, end, month) {
-	var financialYears = 0;
+function calcFinancialYears2(strtDat, curDat) {
+	var finYrs = 0;
+	var strtYr = parseInt(strtDat.getFullYear());
+	var curYr = parseInt(curDat.getFullYear());
+	var curMon = parseInt(curDat.getMonth());
+	
+	finYrs = curYr - strtYr;
 
-	financialYears = end - start;
-
-	//console.log("month - 4 = " + (month - 4));
-	if ((month - 4) < 0) {
-	//console.log("hahaha");
-	financialYears = financialYears - 1;
+	if ((curMon - 4) < 0) {
+		finYrs = finYrs - 1;
 	}
-
-	//console.log("calcFinancialYears(): start = " + start + " end = " + end + " month = " + month + " financialYears = " + financialYears);
-	return financialYears;
+	
+	return finYrs;
 }
 
 function calculatePension(paymentsTable) {
@@ -320,26 +316,23 @@ function calculatePension(paymentsTable) {
 	var interest = 1 + (0.05 / 12);
 
 	pensionTable.addColumn("date", "Month");
-	pensionTable.addColumn('number', 'Size');
+	pensionTable.addColumn("number", "Size");
 
-	console.log("here!");
-	for (i = 0; i < paymentsTable.getNumberOfRows(); i++) {
+	for (i = 0; i < paymentsTable.getNumberOfRows(); i+=1) {
 		date = paymentsTable.getValue(i, 0);
 		size = (size * interest) + paymentsTable.getValue(i, 1);
 		size = Math.round(size * 100) / 100;
 		pensionTable.addRow([date, size]);
 	}
+	
 	return pensionTable;
 }
 
 function incrementPoint(year, month, band, point) {
-	var financialYears = calcFinancialYears(2015, year, month);  
-
-	//console.log("year = " + year + " month = " + month + " band = " + band + " old point = " + point);
 	switch(+band) {
 	case 1:
 		if (point < 3) {
-			point++;
+			point ++;
 		}
 		break;
 	case 2:
@@ -398,19 +391,14 @@ function incrementPoint(year, month, band, point) {
 		}
 		break;
 	}
-	//console.log("new point = " + point);
 	return point;
 }
 
 function updatePoint() {
-	console.log("here");
 	var band = document.getElementById("band").value;
-	
-	console.log(typeof band);
-	console.log(band);
-	
+		
 	switch(band) {
-	case '1':
+	case "1":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"1\">1</option> \
@@ -418,7 +406,7 @@ function updatePoint() {
 			<option value=\"3\">3</option> \
 		</select>";
 		break;
-	case '2':
+	case "2":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"2\">2</option> \
@@ -430,7 +418,7 @@ function updatePoint() {
 			<option value=\"8\">8</option> \
 		</select>";
 		break;
-	case '3':
+	case "3":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"6\">6</option> \
@@ -442,7 +430,7 @@ function updatePoint() {
 			<option value=\"12\">12</option> \
 		</select>";
 		break;
-	case '4':
+	case "4":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"11\">11</option> \
@@ -454,7 +442,7 @@ function updatePoint() {
 			<option value=\"17\">17</option> \
 		</select>";
 		break;
-	case '5':
+	case "5":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"16\">16</option> \
@@ -467,7 +455,7 @@ function updatePoint() {
 			<option value=\"23\">23</option> \
 		</select>";
 		break;
-	case '6':
+	case "6":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"21\">21</option> \
@@ -481,7 +469,7 @@ function updatePoint() {
 			<option value=\"29\">29</option> \
 		</select>";
 		break;
-	case '7':
+	case "7":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"26\">26</option> \
@@ -495,7 +483,7 @@ function updatePoint() {
 			<option value=\"34\">34</option> \
 		</select>";
 		break;
-	case '8a':
+	case "8a":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"33\">33</option> \
@@ -506,7 +494,7 @@ function updatePoint() {
 			<option value=\"38\">38</option> \
 		</select>";
 		break;
-	case '8b':
+	case "8b":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"37\">37</option> \
@@ -517,7 +505,7 @@ function updatePoint() {
 			<option value=\"42\">42</option> \
 		</select>";
 		break;
-	case '8c':
+	case "8c":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"41\">41</option> \
@@ -528,7 +516,7 @@ function updatePoint() {
 			<option value=\"46\">46</option> \
 		</select>";
 		break;
-	case '8d':
+	case "8d":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"45\">45</option> \
@@ -539,7 +527,7 @@ function updatePoint() {
 			<option value=\"50\">50</option> \
 		</select>";
 		break;
-	case '9':
+	case "9":
 		document.getElementById("pointWrapper").innerHTML = "\
 		<select id=\"point\"> \
 			<option value=\"49\">49</option> \
